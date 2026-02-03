@@ -1,0 +1,43 @@
+# Snakefile - Pipeline orchestration for {{ cookiecutter.project_name }}
+#
+# Usage:
+#   snakemake --dry-run          # See what would run
+#   snakemake --cores 1          # Run the pipeline
+#   snakemake --forcerun <rule>  # Force re-run a specific rule
+#
+# The pipeline follows: data/raw/ → processing → data/processed/
+
+# Define your raw input files here
+RAW_FILES = []  # e.g., ["data/raw/input.csv"]
+
+# Define your processed output files here
+PROCESSED_FILES = []  # e.g., ["data/processed/cleaned.parquet"]
+
+
+rule all:
+    """Default rule - builds all processed outputs."""
+    input:
+        PROCESSED_FILES
+
+
+# Example rule - uncomment and modify for your use case
+# rule process_data:
+#     """Process raw data into cleaned format."""
+#     input:
+#         "data/raw/input.csv"
+#     output:
+#         "data/processed/cleaned.parquet"
+#     run:
+#         import polars as pl
+#         df = pl.read_csv(input[0])
+#         # Add your processing logic here
+#         df.write_parquet(output[0])
+
+
+# Example rule with shell command
+# rule download_data:
+#     """Download raw data from external source."""
+#     output:
+#         "data/raw/downloaded.csv"
+#     shell:
+#         "curl -o {output} https://example.com/data.csv"
