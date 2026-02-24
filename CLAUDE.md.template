@@ -12,11 +12,13 @@ your_project/
 │   └── generated/     # AI-generated or synthetic data
 ├── docs/              # Documentation
 ├── notebooks/         # Marimo notebooks for visualization
+├── scripts/           # Where scripts live. They should leverage scripts including src.
 ├── src/
 │   └── your_package/  # Python package for data processing
 ├── tests/             # Test suite
 ├── Snakefile          # Pipeline orchestration (optional)
 └── pyproject.toml     # Project configuration
+└── .gitignore         
 ```
 
 **Data lineage rules:**
@@ -41,19 +43,13 @@ source .venv/bin/activate  # Unix/macOS
 uv pip install -e ".[dev]"
 
 # Add a new dependency
-uv pip install <package>
+uv add <package>
 ```
 
+Claude should consistently use `uv add` to install new dependencies rather than using pip directly, so that packages
+can be tracked.
+
 ## Workflow Guidelines
-
-### Plan-Execute-Evaluate Loop
-
-Use **Shift+Tab** to enter plan mode before executing. Iterate on the plan before running code. This prevents:
-- Unproductive rabbit holes
-- Wasted tokens on bad approaches
-- Accumulating cruft and complexity
-
-Use **Esc** liberally to stop and redirect when things go off track.
 
 ### Separation of Concerns
 
@@ -92,6 +88,8 @@ The notebooks in `notebooks/` use Marimo.  Marimo notebooks are reactive computa
 2. **No circular dependencies** — The dependency graph must be acyclic
 3. **UI values require separate cells** — Access `.value` in a different cell than where the UI element is defined
 4. **Underscore prefix = cell-local** — Variables like `_temp` won't be visible to other cells
+
+**Important note**: While underscores allow local variables in cells without polluting the global namespace, using `_` can make the code less-readable. When cells become long, prefer self-contained over using `_` for every cell.
 
 ### Cell Structure
 
@@ -154,18 +152,13 @@ Run `marimo check --fix` to catch formatting issues and common pitfalls.
 
 ## Visualization Philosophy
 
-Generate **many cheap diagnostic plots** to validate your data. Individually low-utility plots collectively help convince you the data is correct.
+Generate **many cheap diagnostic plots** to validate your data. Individually low-utility plots collectively help convince the user the data is correct.
 
 Don't trust processing code blindly - visualize intermediate outputs. Turn hunches from plots into formal tests as analysis matures.
 
-## Context Management
+## Documenting solutions to difficult bugs
 
-Keep Claude Code's context clean for better results:
-
-- `/clear` - Start fresh when switching tasks
-- `/compact` - Compress context when it gets long
-- Write handoff notes in this file when stopping work mid-task
-- Document solutions to difficult bugs here so they don't get reintroduced
+Document solutions to difficult bugs in LESSONS_LEARNED.md so they don't get reintroduced.
 
 ## Code Quality
 
@@ -184,26 +177,8 @@ ruff format .
 ```
 
 **Maintenance practices:**
-- Be aggressive about culling dead code (git means you don't lose anything)
 - Name things well, rename when function changes
-- Ask Claude to identify dead code and refactor
-- Write tests before refactoring so you know it worked
-
-## Git Workflow
-
-Use branches for experiments. Delete code with impunity knowing you have infinite backups.
-
-```bash
-# Create a branch for experiments
-git checkout -b experiment/new-feature
-
-# If it works, merge
-git checkout main
-git merge experiment/new-feature
-
-# If it fails, just delete
-git branch -D experiment/new-feature
-```
+- Write tests before refactoring
 
 ## Pipeline (Optional)
 
@@ -228,3 +203,5 @@ Benefits:
 - Tracks which outputs are stale
 - Reproduces results with one command
 - Documents the computational graph
+
+Do not force introduction of pipeline unless user asks. If they ask for a specific technology. If you do use pipelining, use it consistently rather than running code directly.
