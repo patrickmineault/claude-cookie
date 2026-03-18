@@ -89,7 +89,7 @@ The notebooks in `notebooks/` use Marimo.  Marimo notebooks are reactive computa
 3. **UI values require separate cells** — Access `.value` in a different cell than where the UI element is defined
 4. **Underscore prefix = cell-local** — Variables like `_temp` won't be visible to other cells
 
-**Important note**: While underscores allow local variables in cells without polluting the global namespace, using `_` can make the code less-readable. When cells become long, prefer self-contained over using `_` for every cell.
+**Important note**: While underscores allow local variables in cells without polluting the global namespace, using `_` can make the code less readable. When cells become long, prefer self-contained functions (which don't have the global variable limitation) over using `_` for every variable.
 
 ### Cell Structure
 
@@ -150,6 +150,14 @@ def _():
 
 Run `marimo check --fix` to catch formatting issues and common pitfalls.
 
+### Paths
+
+When printing commands to run a notebook, Claude Code should always do it in watch mode:
+
+```marimo edit --watch ${filename}.py```
+
+It should assume that the venv is already activated and that the user is in the notebooks folder. Treat paths consequently.
+
 ## Visualization Philosophy
 
 Generate **many cheap diagnostic plots** to validate your data. Individually low-utility plots collectively help convince the user the data is correct.
@@ -204,4 +212,4 @@ Benefits:
 - Reproduces results with one command
 - Documents the computational graph
 
-Do not force introduction of pipeline unless user asks. If they ask for a specific technology. If you do use pipelining, use it consistently rather than running code directly.
+Do not force introduction of pipeline unless user asks. If you do use pipelining, **use it consistently** rather than running code directly.
